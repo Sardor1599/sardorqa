@@ -11,7 +11,7 @@ Feature: Cashback Calculation
     #there is a Merchant with
     Given there is a branch "<branch_name>" for "<merchant_name>"
     #there is a Branch ... for Merchant ...
-    And there is a promotion with "<discount>" discount only for females
+    And there is a promotion with "<discount_percentage>" discount only for females
     #there is a Promotion with  .... discount  only for females
     And the click percentage for Merchant "<merchant_name>" is "<click_percentage>"
     #the click percentage for Merchant ... is click %
@@ -23,9 +23,9 @@ Feature: Cashback Calculation
     And there is a "<promotion_number>" promotion with "<discount_percentage>" discount only for "<gender>"
 
     Examples:
-      | merchant_name | branch_name | discount | click_percentage | age_range | phone_number      | user_amount   | click_amount |  cashback |                                                               |gender | discount_percentage | promotion_number |
-      | "KFC"         | "Chilonzor" | "10%"    | 1                | "18-45"   | "998990005545"    | "15,000,000"  | 10.000       | should not receive cashback, as the click percentage does not apply to males| |male   | 15%                 |
-      | "KFC"         | "Yunusabad" | "15%"    | 1                | "18-45"   | "998990000101"    | "15,000,000"  | 5.000        | should receive 10% - 1,500,000 UZS cashback |                                 |female | 10%                 |
+      | merchant_name | branch_name | discount_percentage | click_percentage | age_range | phone_number      | user_amount   | click_amount |promotion_number|gender  |  cashback                                                                   |
+      | "KFC"         | "Chilonzor" | "10%"               | 1                | "18-45"   | "998990005545"    | "15,000,000"  | 10.000       |1               | male   | should not receive cashback, as the click percentage does not apply to males|
+      | "KFC"         | "Yunusabad" | "15%"               | 1                | "18-45"   | "998990000101"    | "15,000,000"  | 5.000        |                | female | should receive 10% - 1,500,000 UZS cashback |
 
 
 @tag2
@@ -158,8 +158,8 @@ Feature: Cashback Calculation
 
     Examples:
 
-| merchant_name | branch_name | promotion_number | discount_percentage     | gender       | click_percentage | age_range | user_amount|click_amount|phone_number|
-| Evos          | Tashkent    | 3                | 10%                     | female       | 1%               | 18-45     | 300.000    | 10.000     |998902400000|
+    | merchant_name | branch_name | promotion_number | discount_percentage     | gender       | click_percentage | age_range | user_amount|click_amount|phone_number|
+    | Evos          | Tashkent    | 3                | 10%                     | female       | 1%               | 18-45     | 300.000    | 10.000     |998902400000|
 
   @tag6 @cashback
 
@@ -167,17 +167,26 @@ Feature:Cashback Calculation
 
     Scenario Outline:   Scenario: User makes a purchase, but does not receive cashback and discount due to the absence of a promotion  and inappropriate branch
 
-    And not announced <string> at a discounted price
-    #Not Announced proзpppppmotion at a discounted price
-    And the click percentage for Merchant "<string>" is "<string>"%
+    And not announced <promotion_number> at a discounted price
+
+    #Not Announced promotion at a discounted price
+    And the click percentage for Merchant "<merchant_name>" is "<click_percentage>"%
+
     #the click percentage for Merchant "Evos" is 1%
 
-    When a "<string>" user  makes a purchase of "<string>" UZS at the "<string>" branch
+    When a "<gender>" user  makes a purchase of "<phone_number>" UZS at the "<branch_name>" branch
+
     #a male user with phone number "998990000101" makes a purchase of "9,000,000" UZS at the "Yunusabad" branch
 
-    Then the
-    the user should not receive cashback and discount, as there is no promotion declared and the "Yunusabad" branch is not participating in any campaign
-    Then the click receives their 1% - 90,000 UZS
+    Then the user should not receive cashback and discount, as there is no promotion declared and the "Yunusabad" branch is not participating in any campaign
+    Then the click receives their "<click_perchentage>" - "<user_amount>" UZS
+
+    Examples:
+
+    | merchant_name | branch_name | promotion_number | discount_percentage | gender       | click_percentage | age_range | user_amount|click_amount|phone_number|
+    | Evos          | Tashkent    | 3                | 10%                 | female       | 1%               | 18-45     | 300.000    | 10.000     |998902400000|
+
+
 
  @tag7
    Feature: Cashback Calculation

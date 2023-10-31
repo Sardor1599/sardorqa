@@ -22,6 +22,13 @@ Feature: Cashback Calculation
 
     And there is a "<promotion_number>" promotion with "<discount_percentage>" discount only for "<gender>"
 
+
+ Where:
+
+   | Target URL | Resulting URL | Page Title
+   | cabinet    | /merchant     | Cabinet
+   | users      | /resricted    | You dont have acces to this page
+
     Examples:
       | merchant_name | branch_name | discount_percentage | click_percentage | age_range | phone_number      | user_amount   | click_amount |promotion_number|gender  |  cashback                                                                   |
       | "KFC"         | "Chilonzor" | "10%"               | 1                | "18-45"   | "998990005545"    | "15,000,000"  | 10.000       |1               | male   | should not receive cashback, as the click percentage does not apply to males|
@@ -33,26 +40,19 @@ Feature: Cashback Calculation
 Feature: Cashback Calculation cashback target_age_18_45
 
   Scenario Outline: User makes a purchase, but branch is not participating in the promotion
-    Given there is a Merchant with name "<merchant_name>"
-    Given there is a branch "<branch_name>" for "<merchant_name>"
+    Given there is a Merchant with name "<merchant>"
+    Given there is a branch "<branch_name>" for "<merchant>"
     And there is a "<promotion_number>" promotion with "<discount_percentage>" discount only for "<gender>"
-    And the click percentage for Merchant "<merchant_name>" is "<click_percentage>"
+    And the click percentage for Merchant "<merchant>" is "<click_percentage>"
     And the age target is "<age_range>"
     When a "<gender>" user aged "<age_range>" makes a purchase of "<user_amount>" UZS at the "<branch_name>" branch
     Then the "<gender>" user aged "<age_range>" should not receive cashback, as the "<branch_name>" branch is not participating in the "<promotion_number>" promotion for "<gender>"
     And the click receives their "<click_percentage>" - "<click_amount>" UZS
 
 
- Where:
-
-   | Target URL | Resulting URL | Page Title
-   | cabinet    | /merchant     | Cabinet
-   | users      | /resricted    | You dont have acces to this page
-
-
   Examples:
 
-| merchant_name | branch_name | promotion_number | discount_percentage   | gender       | click_percentage | age_range |click_amount| user_amount |
+| merchant | branch_name | promotion_number | discount_percentage   | gender       | click_percentage | age_range |click_amount| user_amount |
 | Evos          | Tashkent      | 3              | 10%                   | female         | 1%             | 18-45     |50.000      | 1200,0000   |
 
 @tag3
@@ -69,7 +69,7 @@ Feature: User makes a purchase, but branch is not participating in the promotion
 
        #user female aged 30 should not receive cashback, as the "Yunusabad" branch is not participating in the promotion for females
 
-     Then the user "<gender>" should {should not receive cashback, as the click percentage does not apply to males}
+     Then the user "<gender>" should not receive cashback, as the click percentage does not apply to males
 
        #the male user aged 30 should not receive cashback, as the "Yunusabad" branch is not participating in the discount campaign for males
 
@@ -78,14 +78,8 @@ Feature: User makes a purchase, but branch is not participating in the promotion
        #the click receives their 1% - 120,000 UZS
 
 
-     Where:
 
-   | Target URL | Resulting URL | Page Title
-   | cabinet    | /merchant     | Cabinet
-   | users      | /resricted    | You dont have acces to this page
-
-
-      Examples:
+    Examples:
 
 | merchant_name | branch_name | promotion_number | discount_percentage  | gender       | click_percentage | age_range    |  click_amount |user_amount|
 | Evos          | Tashkent    | 3                | 10%                  | female       | 1%               | 18-45        |  10.000       | 1200,0000 |
@@ -113,12 +107,13 @@ Feature: User makes a purchase, but the purchase amount is below the minimum
     
       #a user with phone number "998990007777" makes a purchase of "800,000" UZS at the "Mirobod" branch
     
-    Then the user "<phone_number>" should {should not receive cashback, as the purchase amount is below the minimum}
+    Then the user "<phone_number>" should not receive cashback, as the purchase amount is below the minimum
       
         #the user "998990007777" should not receive cashback, as the purchase amount is below the minimum
     
     Then the click receives their "<click_percentage>" - "<click_amount>" UZS
          #the click receives their 1% - 8,000 UZS
+
 
 
           Examples:
@@ -155,6 +150,8 @@ Feature: Cashback Calculation
     #a male user with phone number "998990120101" makes a purchase of "6,000,000" UZS at the "Yunusabad" branch
     Then the user "<phone_number>" should receive "<discount_percentage>" - "<user_amount>" UZS cashback
     #the user "998990003333" should receive a cashback of 900,000 UZS (15% of the purchase amount)
+
+
 
     Examples:
 
@@ -211,22 +208,18 @@ Feature:Cashback Calculation
 
 Feature: Cashback Calculation
   @cashback
-  Scenario Outline: User receives cashback for purchasing specific products
-    Given there is a Merchant with name "<merchant_name>"
-    Given there is a branch "<branch_name>" for "<merchant_name>"
-    Given there is a "<promotion_number>" promotion with "{10%}" discount only for "<gender>"
-    And the click percentage for Merchant "<string>" is "<string>"%
-    And the minimum purchase amount for promotion is "1,000,000" UZS
-    And the campaign applies to products in the "Electronics" category
-    And the age target is 18-55
-    When a male user with phone number "998990004444" makes a purchase of "1,200,000" UZS at the "Mirobod" branch
-    Then the male user "998990004444" should receive a cashback of 180,000 UZS for products in the "Electronics" category
-    Then the male user "998990004444" should not receive a cashback of 180,000 UZS for products in other categories
+
+    And the minimum purchase amount for promotion is "<click_amount>" UZS
+    And the campaign applies to products in the "<category>" category
+    And the age target is "<age_range>"
+    When a male user with phone number "phone_number" makes a purchase of "<click_amount>" UZS at the "Mirobod" branch
+    Then the male user "<phone_number>" should receive a cashback of "click_amount" UZS for products in the "<category>" category
+    Then the male user "<phone_number>" should not receive a cashback of 180,000 UZS for products in other categories
     Then the user should not receive a cashback if they are older than 55
 
    Examples:
 
-| merchant_name | branch_name | promotion_number | discount_percentage   | gender       | click_percentage | age_range | click_amount| day|
-| Evos          | Tashkent    | 3                | 10%                   | female       | 1%               | 18-45     | 500,000     | Friday |
-| KFC           | Yunusabad   | 4                | 15%                   | male         | 1%               | 18-45     | 500,000     | all    |
+| merchant_name | branch_name | promotion_number | discount_percentage   | gender       | click_percentage | age_range | click_amount| day    | category   |
+| Evos          | Tashkent    | 3                | 10%                   | female       | 1%               | 18-45     | 500,000     | Friday | shoes      |
+| KFC           | Yunusabad   | 4                | 15%                   | male         | 1%               | 18-45     | 500,000     | all    | electronics|
 | MaxWay        |

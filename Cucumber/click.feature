@@ -75,7 +75,7 @@ Feature: User makes a purchase, but branch is not participating in the promotion
 
      And the click receives their "<click_percentage>" - "<click_amount>" UZS
 
-       #the click receives their 1% - 120,000 UZS 111
+       #the click receives their 1% - 120,000 UZS
 
 
      Where:
@@ -124,8 +124,8 @@ Feature: User makes a purchase, but the purchase amount is below the minimum
           Examples:
 
 | merchant_name | branch_name | promotion_number | discount_percentage  | gender       | click_percentage | age_range  | user_amount  |click_amount|
-| Evos          | Tashkent    | 3                | 10%                  | female       | 1%               | 18-45      | 1200.0000    |10.000
-| Dodo Pizza    | Nazarbek    | 4                | 20%                  | male         | 1%               | 25-35      | 500.000      |50.000    |
+| Evos          | Tashkent    | 3                | 10%                  | female       | 1%               | 18-45      | 1200.0000    |10.000      |
+| Dodo Pizza    | Nazarbek    | 4                | 20%                  | male         | 1%               | 25-35      | 500.000      |50.000      |
 | MaxWay        | NEXT        | 5                | 5%                   | female       | 1%               |            |
 | Bellissimo    | Yunusabad   | 6                | 15%                  | male         | 1%               |            |
 | KFC           | Magic City  | 7                | 10%                  | female       | 1%               |            |
@@ -139,22 +139,27 @@ Feature: Cashback Calculation
 
   Scenario Outline: User makes a purchase, but the branch is not participating in the promotion
 
-    And there is a "<string>" promotion with "<discount_percentage>" discount only for "<string>"
+    And there is a promotion with "<discount_percentage>" discount only for "<gender>"
+
     #there is a discount promotion with "15%" discount for all users
+
     And the click percentage for Merchant "<merchant_name>" is "<click_percentage>"%
+
     #the click percentage for Merchant "Evos" is 1%
-    And the minimum <string> for promotion is "<string>" UZS
+
+    And the minimum amount for promotion is "<user_amount>"
+
     #the minimum purchase amount for promotion  is "5,000,000" UZS
 
-    When a "<string>" user aged "<string>" makes a purchase of "<string>" UZS at the "<string>" branch
+    When a "<gender>" user with phone number "<phone_number>" makes a purchase of "<user_amount>" UZS at the "<branch_name>" branch
     #a male user with phone number "998990120101" makes a purchase of "6,000,000" UZS at the "Yunusabad" branch
-    Then the user "<string>" should receive <string> - <string> UZS cashback
+    Then the user "<phone_number>" should receive "<discount_percentage>" - "<user_amount>" UZS cashback
     #the user "998990003333" should receive a cashback of 900,000 UZS (15% of the purchase amount)
 
     Examples:
 
-| merchant_name | branch_name | promotion_number | discount_percentage   | gender       | click_percentage | age_range |
-| Evos          | Tashkent    | 3                | 10%                     | female       | 1%             | 18-45     |
+| merchant_name | branch_name | promotion_number | discount_percentage     | gender       | click_percentage | age_range | user_amount|click_amount|phone_number|
+| Evos          | Tashkent    | 3                | 10%                     | female       | 1%               | 18-45     | 300.000    | 10.000     |998902400000|
 
   @tag6 @cashback
 

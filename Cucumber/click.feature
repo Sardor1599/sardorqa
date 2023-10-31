@@ -62,13 +62,20 @@ Feature: User makes a purchase, but branch is not participating in the promotion
   Scenario Outline:
 
      When a "<gender>" user aged "<age_range>" makes a purchase of "<user_amount>" UZS at the "<branch_name>" branch
+
        #A female user aged 30 makes a purchase of "12,000,000" UZS at the "Yunusabad" branch
+
      Then the "<gender>" user aged "<age_range>" should not receive cashback, as the "<branch_name>" branch is not participating in the "<promotion_number>" promotion for "<gender>">"
+
        #user female aged 30 should not receive cashback, as the "Yunusabad" branch is not participating in the promotion for females
+
      Then the user "<gender>" should {should not receive cashback, as the click percentage does not apply to males}
+
        #the male user aged 30 should not receive cashback, as the "Yunusabad" branch is not participating in the discount campaign for males
+
      And the click receives their "<click_percentage>" - "<click_amount>" UZS
-       #the click receives their 1% - 120,000 UZS
+
+       #the click receives their 1% - 120,000 UZS 111
 
 
      Where:

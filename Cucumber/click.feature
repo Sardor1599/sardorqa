@@ -29,6 +29,8 @@ Feature: Cashback Calculation
    | cabinet    | /merchant     | Cabinet
    | users      | /resricted    | You dont have acces to this page
 
+      | merchant_name | branch_name | promotion_number | discount_percentage   | gender       | click_percentage | age_range | click_amount| day    |
+| Evos          | Tashkent    | 3                | 10%                   | female       | 1%               | 18-45     | 500,000     | Friday |
     Examples:
       | merchant_name | branch_name | discount_percentage | click_percentage | age_range | phone_number      | user_amount   | click_amount |promotion_number|gender  |  cashback                                                                   |
       | "KFC"         | "Chilonzor" | "10%"               | 1                | "18-45"   | "998990005545"    | "15,000,000"  | 10.000       |1               | male   | should not receive cashback, as the click percentage does not apply to males|
@@ -84,8 +86,8 @@ Feature: User makes a purchase, but branch is not participating in the promotion
 | merchant_name | branch_name | promotion_number | discount_percentage  | gender       | click_percentage | age_range    |  click_amount |user_amount|
 | Evos          | Tashkent    | 3                | 10%                  | female       | 1%               | 18-45        |  10.000       | 1200,0000 |
 | Dodo Pizza    | Nazarbek    | 4                | 20%                  | male         | 1%               | 25-35        |  5.000        | 500.000   |
-| MaxWay        | NEXT        | 5                | 5%                   | female       | 1%               | "<age_range>"|
-| Bellissimo    | Yunusabad   | 6                | 15%                  | male         | 1%               | "<age_range>"|
+
+
 
 
 @tag4 @cashback
@@ -121,10 +123,7 @@ Feature: User makes a purchase, but the purchase amount is below the minimum
 | merchant_name | branch_name | promotion_number | discount_percentage  | gender       | click_percentage | age_range  | user_amount  |click_amount|
 | Evos          | Tashkent    | 3                | 10%                  | female       | 1%               | 18-45      | 1200.0000    |10.000      |
 | Dodo Pizza    | Nazarbek    | 4                | 20%                  | male         | 1%               | 25-35      | 500.000      |50.000      |
-| MaxWay        | NEXT        | 5                | 5%                   | female       | 1%               |            |
-| Bellissimo    | Yunusabad   | 6                | 15%                  | male         | 1%               |            |
-| KFC           | Magic City  | 7                | 10%                  | female       | 1%               |            |
-| Syndicate     | Anhor       | 8                | 10%                  | female       | 1%               |            |
+
 
 
 @tag5 @cashback
@@ -204,22 +203,33 @@ Feature:Cashback Calculation
 | Evos          | Tashkent    | 3                | 10%                   | female       | 1%               | 18-45     | 500,000     | Friday |
 
 
-@tag8
-
-Feature: Cashback Calculation
-  @cashback
-
+  @tag8 @cashback
+  Scenario Outline: Cashback Calculation
     And the minimum purchase amount for promotion is "<click_amount>" UZS
     And the campaign applies to products in the "<category>" category
     And the age target is "<age_range>"
-    When a male user with phone number "phone_number" makes a purchase of "<click_amount>" UZS at the "Mirobod" branch
+    When a male user with phone number "phone_number" makes a purchase of "<click_amount>" UZS at the "<branch_name>" branch
     Then the male user "<phone_number>" should receive a cashback of "click_amount" UZS for products in the "<category>" category
     Then the male user "<phone_number>" should not receive a cashback of 180,000 UZS for products in other categories
     Then the user should not receive a cashback if they are older than 55
+    Examples:
 
-   Examples:
+       Examples:
 
-| merchant_name | branch_name | promotion_number | discount_percentage   | gender       | click_percentage | age_range | click_amount| day    | category   |
-| Evos          | Tashkent    | 3                | 10%                   | female       | 1%               | 18-45     | 500,000     | Friday | shoes      |
-| KFC           | Yunusabad   | 4                | 15%                   | male         | 1%               | 18-45     | 500,000     | all    | electronics|
-| MaxWay        |
+| merchant_name | branch_name | promotion_number | discount_percentage   | gender       | click_percentage | age_range | click_amount| day    | category |
+| Evos          | Tashkent    | 3                | 10%                   | female       | 1%               | 18-45     | 500,000     | Friday | shoes    |
+
+
+
+  @tag9 @cashback
+  Scenario Outline: Cashback Calculation
+    And the minimum purchase amount for promotion is "<click_amount>" UZS
+    And the cashback percentage for the "Electronics" category is 5%
+    When a user with phone number "<phone_number>" makes a purchase of "click_amount" UZS on "Electronics" category at the "Sergeli" branch
+    Then the user "phone_number" should receive a cashback of 40,000 UZS (5% of the purchase amount for the "Electronics" category)
+    Then the click receives their 1% - 8,000 UZS
+
+Examples:
+
+| merchant_name | branch_name | promotion_number | discount_percentage   | gender       | click_percentage | age_range | click_amount| day    | category |
+| Evos          | Tashkent    | 3                | 10%                   | female       | 1%               | 18-45     | 500,000     | Friday | shoes    |

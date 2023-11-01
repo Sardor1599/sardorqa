@@ -1,22 +1,21 @@
+python
 from behave import given, when, then
 
-# Шаги сценария
 @given('there is a Merchant with name "{merchant_name}"')
 def step_given_merchant(context, merchant_name):
-    context.merchant_name = merchant_name
+    #Создание Merchant
 
 @given('there is a branch "{branch_name}" for "{merchant_name}"')
 def step_given_branch(context, branch_name, merchant_name):
-    context.branch_name = branch_name
-    context.merchant_name = merchant_name
+    #Создание Branch
 
-@given('there is a promotion with "{10%}" discount only for females')
-def step_given_promotion(context, discount):
-    context.discount = discount
+@given('there is a "{promotion_number}" promotion with "{discount_percentage}" discount only for "{gender}"')
+def step_given_promotion(context, promotion_number, discount_percentage, gender):
+    #Создание Promotion
 
-
-And the minimum purchase amount for promotion  is "500,000" UZS
-
+@when('a user with phone number "{phone_number}" makes a transfer of "{user_amount}" UZS')
+def step_when_user_makes_transfer(context, phone_number, user_amount):
+    #перевод
 
 @given('the click percentage for Merchant "{merchant_name}" is "{1}"%')
 def step_given_click_percentage(context, merchant_name, click_percentage):

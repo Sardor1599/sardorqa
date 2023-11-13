@@ -7,21 +7,38 @@ Feature: Cashback Calculation
 
     @tag1
   Scenario Outline: User makes a purchase, but click percentage is not applied
-    Given there is a Merchant with name "<merchant_name>"
-    #there is a Merchant with
+    Given there is a Merchant with name "<merchant_name> "
+    |merchant_name|
+    |EVOS         |
+    |KFC          |
+
+    """there is a Merchant with"""
     Given there is a branch "<branch_name>" for "<merchant_name>"
-    #there is a Branch ... for Merchant ...
+    |branch_name|merchant_name|
+    |Mirobod    |EVOS         |
+    """there is a Branch ... for Merchant"""
     And there is a promotion with "<discount_percentage>" discount only for females
-    #there is a Promotion with  .... discount  only for females
+    |discount_percenrage|
+    |      10%          |
+    |      15%          |
+    """there is a Promotion with  .... discount  only for females"""
     And the click percentage for Merchant "<merchant_name>" is "<click_percentage>"
-    #the click percentage for Merchant ... is click %
+    |merchant_name|click_percentage|
+    |EVOS         |     10%        |
+    """the click percentage for Merchant ... is click %"""
     And the age target is "<age_range>"
-    #the age target is ...
+    |age_range|
+    |18-45    |
+    """#the age target is ..."""
     When a user with phone number "<phone_number>" makes a transfer of "<user_amount>" UZS
+    |phone_number|user_amount|
+    |998905002500|500.000    |
     Then the user "<phone_number>" should "<cashback>"
-
+    |phone_number|cashback|
+    |998954502145|should receive 10% - 1,500,000 UZS cashback|
     And there is a "<promotion_number>" promotion with "<discount_percentage>" discount only for "<gender>"
-
+    |promotion_number|discount_percentage|
+    |1               |        10%        |
 
  Where:
 
@@ -30,7 +47,7 @@ Feature: Cashback Calculation
    | users      | /resricted    | You dont have acces to this page
 
       | merchant_name | branch_name | promotion_number | discount_percentage   | gender       | click_percentage | age_range | click_amount| day    |
-| Evos          | Tashkent    | 3                | 10%                   | female       | 1%               | 18-45     | 500,000     | Friday |
+| Evos          | Tashkent          | 3                | 10%                   | female       | 1%               | 18-45     | 500,000     | Friday |
     Examples:
       | merchant_name | branch_name | discount_percentage | click_percentage | age_range | phone_number      | user_amount   | click_amount |promotion_number|gender  |  cashback                                                                   |
       | "KFC"         | "Chilonzor" | "10%"               | 1                | "18-45"   | "998990005545"    | "15,000,000"  | 10.000       |1               | male   | should not receive cashback, as the click percentage does not apply to males|
@@ -42,20 +59,25 @@ Feature: Cashback Calculation
 Feature: Cashback Calculation cashback target_age_18_45
 
   Scenario Outline: User makes a purchase, but branch is not participating in the promotion
-    Given there is a Merchant with name "<merchant>"
-    Given there is a branch "<branch_name>" for "<merchant>"
-    And there is a "<promotion_number>" promotion with "<discount_percentage>" discount only for "<gender>"
-    And the click percentage for Merchant "<merchant>" is "<click_percentage>"
-    And the age target is "<age_range>"
-    When a "<gender>" user aged "<age_range>" makes a purchase of "<user_amount>" UZS at the "<branch_name>" branch
-    Then the "<gender>" user aged "<age_range>" should not receive cashback, as the "<branch_name>" branch is not participating in the "<promotion_number>" promotion for "<gender>"
-    And the click receives their "<click_percentage>" - "<click_amount>" UZS
 
+    And there is a "<promotion_number>" promotion with "<discount_percentage>" discount only for "<gender>"
+    |promotion_number|discount_percentage|
+    |       2        |   10%             |
+    When a "<gender>" user aged "<age_range>" makes a purchase of "<user_amount>" UZS at the "<branch_name>" branch
+    |gender|age_range|user_amount|branch_name|
+    |male  |18-45    |1000.000   | EVOS      |
+    |female|21-50    |500.000    | KFC       |
+    Then the "<gender>" user aged "<age_range>" should not receive cashback, as the "<branch_name>" branch is not participating in the "<promotion_number>" promotion for "<gender>"
+    |gender|age_range|branch_name|promotion_number|
+    |male  |25-40    |MaxWay     |   2            |
+    And the click receives their "<click_percentage>" - "<click_amount>" UZS
+    |click_percentage|click_amount|
+    |      2%        |700.000     |
 
   Examples:
 
 | merchant | branch_name | promotion_number | discount_percentage   | gender       | click_percentage | age_range |click_amount| user_amount |
-| Evos          | Tashkent      | 3              | 10%                   | female         | 1%             | 18-45     |50.000      | 1200,0000   |
+| Evos     | Tashkent    | 3                | 10%                   | female         | 1%             | 18-45     |50.000      | 1200,0000   |
 
 @tag3
 
@@ -63,20 +85,16 @@ Feature: User makes a purchase, but branch is not participating in the promotion
 
   Scenario Outline:
 
-     When a "<gender>" user aged "<age_range>" makes a purchase of "<user_amount>" UZS at the "<branch_name>" branch
-
-       #A female user aged 30 makes a purchase of "12,000,000" UZS at the "Yunusabad" branch
-
-     Then the "<gender>" user aged "<age_range>" should not receive cashback, as the "<branch_name>" branch is not participating in the "<promotion_number>" promotion for "<gender>">"
-
-       #user female aged 30 should not receive cashback, as the "Yunusabad" branch is not participating in the promotion for females
 
      Then the user "<gender>" should not receive cashback, as the click percentage does not apply to males
 
-       #the male user aged 30 should not receive cashback, as the "Yunusabad" branch is not participating in the discount campaign for males
-
+       #the male user lshould not receive cashback, as the "Yunusabad" branch is not participating in the discount campaign for males
+    |gender|
+    |male  |
+    |female|
      And the click receives their "<click_percentage>" - "<click_amount>" UZS
-
+    |click_percentage|click_amount|
+    |    1%          | 500.000    |
        #the click receives their 1% - 120,000 UZS
 
 

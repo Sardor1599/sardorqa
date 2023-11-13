@@ -51,3 +51,13 @@ Feature: Cashback Calculation @cashback @target_age_18_45
 | Evos          | Tashkent      | 3                | 10%                 | female       | 1%               | 18-45     |
 
 
+ 3 dop
+
+
+    When a "<gender>" user aged "<age_range>" makes a purchase of "<user_amount>" UZS at the "<branch_name>" branch
+
+       #A female user aged 30 makes a purchase of "12,000,000" UZS at the "Yunusabad" branch
+
+     Then the "<gender>" user aged "<age_range>" should not receive cashback, as the "<branch_name>" branch is not participating in the "<promotion_number>" promotion for "<gender>">"
+
+       #user female aged 30 should not receive cashback, as the "Yunusabad" branch is not participating in the promotion for females
